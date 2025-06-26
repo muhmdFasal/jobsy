@@ -223,7 +223,7 @@ import React from 'react'
 
 const HomePage = () => {
   return (
-    <div className='mt-40 display-flex justify-center items-center text-3xl font-bold text-gray-700'>
+    <div className='mt-40 display-flex justify-center items-center text-3xl font-bold text-gray-200'>
       home
     </div>
   )

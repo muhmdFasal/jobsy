@@ -187,7 +187,7 @@ const Signup = () => {
 
           <button
             type="submit"
-            className="mt-4 w-full py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700"
+            className="mt-4 cursor-pointer w-full py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700"
           >
             Register now
           </button>

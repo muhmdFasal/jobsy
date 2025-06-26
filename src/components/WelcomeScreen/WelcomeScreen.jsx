@@ -14,13 +14,13 @@ const WelcomeScreen = () => {
         <div className="space-x-4">
           <button
             onClick={() => navigate("/login")}
-            className="bg-white text-blue-600 font-semibold py-2 px-6 rounded-xl hover:bg-gray-100 transition"
+            className="bg-white cursor-pointer text-blue-600 font-semibold py-2 px-6 rounded-xl hover:bg-gray-100 transition"
           >
             Login
           </button>
           <button
             onClick={() => navigate("/signup")}
-            className="bg-yellow-400 text-black font-semibold py-2 px-6 rounded-xl hover:bg-yellow-300 transition"
+            className="bg-yellow-400 cursor-pointer text-black font-semibold py-2 px-6 rounded-xl hover:bg-yellow-300 transition"
           >
             Register
           </button>

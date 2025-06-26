@@ -6,7 +6,7 @@ import Footer from "../components/shared/Footer";
 const Layout = () => {
     return (
         <div>
-            <div className="flex flex-row min-h-screen bg-gray-100">
+            <div className="flex flex-row min-h-screen  bg-white">
                  <Sidebar />
                  <div className="flex-1 flex flex-col">
                     <Navbar />

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
 const handleLogin = async (e) => {
   e.preventDefault();
@@ -23,6 +25,7 @@ const handleLogin = async (e) => {
       alert("✅ Login successful!");
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      navigate('/feed')
     } else {
       alert(`❌ Error: ${data.msg || data.message || 'Login failed.'}`);
     }
@@ -63,7 +66,7 @@ const handleLogin = async (e) => {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+          className="w-full cursor-pointer bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
         >
         
           Login

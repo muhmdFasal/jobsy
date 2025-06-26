@@ -1,65 +1,40 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import toast, { Toaster } from 'react-hot-toast';
+
 
 export default function Sidebar() {
     const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-    const [newPost, setNewPost] = useState("");
-    const [imageFile, setImageFile] = useState(null);
-    const [posts, setPosts] = useState([]);
 
-    const loggedInUser = {
-        _id: "665f1181a0b4df001f9f509a",
-        name: "Fasal Jr",
-        email: "fasal@example.com",
-        avatar: "https://i.pravatar.cc/100?img=8",
-    };
 
     useEffect(() => {
         fetch("http://localhost:5000/api/posts")
             .then((res) => res.json())
             .then((data) => setPosts(data))
-            .catch((err) => console.error("Failed to load posts:", err));
+            .catch((err) => {
+                console.error("Failed to load posts:", err);
+                toast.error("Failed to load posts");
+            });
     }, []);
 
-    const handlePostSubmit = async () => {
-        if (newPost.trim() === "" && !imageFile) return;
-
-        const formData = new FormData();
-        formData.append("text", newPost);
-        formData.append("userId", loggedInUser._id);
-        if (imageFile) formData.append("image", imageFile);
-
-        try {
-            const res = await fetch("http://localhost:5000/api/posts", {
-                method: "POST",
-                body: formData,
-            });
-
-            const data = await res.json();
-            if (res.ok) {
-                setPosts([data, ...posts]);
-                setNewPost("");
-                setImageFile(null);
-            } else {
-                alert("\u274C Error: " + (data.message || "Post failed"));
-            }
-        } catch (err) {
-            alert("\u274C Error posting: " + err.message);
-        }
-    };
-
-    const handleImageChange = (e) => {
-        if (e.target.files[0]) {
-            setImageFile(e.target.files[0]);
-        }
-    };
 
     const toggleMobileSidebar = () => {
         setMobileSidebarOpen(!mobileSidebarOpen);
     };
 
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        toast.success("Logged out successfully");
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 1000);
+    };
+
+
     return (
         <>
+            <Toaster position="top-center" reverseOrder={false} />
             {/* Mobile Toggle Button - Only show when sidebar is closed */}
             {!mobileSidebarOpen && (
                 <button
@@ -106,6 +81,12 @@ export default function Sidebar() {
                         🏠 Home
                     </Link>
                     <Link
+                        to="/feed/profile"
+                        className="px-3 py-2 rounded hover:bg-yellow-100 transition-colors"
+                    >
+                        👤Profile
+                    </Link>
+                    <Link
                         to="/feed/applications"
                         className="px-3 py-2 rounded hover:bg-yellow-100 transition-colors"
                     >
@@ -123,12 +104,13 @@ export default function Sidebar() {
                     >
                         🧾 My Posts
                     </Link>
-                    <Link
-                        to="/"
-                        className="px-3 py-2 rounded hover:bg-red-100 text-red-600 transition-colors"
+
+                    <button
+                       onClick={handleLogout}
+                        className="px-3 cursor-pointer py-2 rounded hover:bg-red-100 text-red-600 transition-colors text-left"
                     >
                         🚪 Logout
-                    </Link>
+                    </button>
                 </nav>
 
             </aside>
@@ -192,12 +174,12 @@ export default function Sidebar() {
                         >
                             🧾 My Posts
                         </Link>
-                        <Link
-                            to="/"
-                            className="px-3 py-2 rounded hover:bg-red-100 text-red-600 transition-colors"
+                        <button
+                            onClick={handleLogout}
+                            className="px-3 py-2 rounded hover:bg-red-100 text-red-600 transition-colors text-left"
                         >
                             🚪 Logout
-                        </Link>
+                        </button>
                     </nav>
                 </aside>
             )}
