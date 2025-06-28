@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [workStatus, setWorkStatus] = useState(null);
@@ -13,37 +15,46 @@ const Signup = () => {
     password: '',
     mobile: '',
   });
+  const navigate= useNavigate();
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const response = await fetch('http://localhost:5000/api/auth/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        mobile: formData.mobile, // ✅ ADD THIS LINE
-        role: workStatus === 'experienced' ? 'user' : 'fresher',
-      }),
-    });
-
-    const data = await response.json();
-    console.log("Signup Response:", data);
-
-    if (response.ok) {
-      alert('✅ Registered successfully!');
-    } else {
-      alert(`❌ Error: ${data.msg || data.message || 'Registration failed.'}`);
+    if (!workStatus) {
+      toast.error("❌ Please select your work status");
+      return;
     }
-  } catch (err) {
-    alert(`❌ Network error: ${err.message}`);
-  }
-};
+
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          mobile: formData.mobile,
+          role: workStatus === 'experienced' ? 'user' : 'fresher',
+        }),
+
+      });
+
+      const data = await response.json();
+      console.log("Signup Response:", data);
+
+      if (response.ok) {
+         toast.success('✅ Registered successfully!');
+         navigate('/feed');
+      } else {
+        toast.error(`❌ ${data.msg || data.message || 'Registration failed.'}`);
+      }
+    } catch (err) {
+      toast.error(`❌ Network error: ${err.message}`);
+    }
+  };
 
 
   const footerLinks = [
@@ -96,6 +107,7 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
+     <Toaster position="top-center" reverseOrder={false} />
       <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
         <h2 className="text-2xl font-semibold mb-1">Create your Jobsy profile</h2>
         <p className="text-sm text-gray-600 mb-6">Search & apply to jobs from India's No.1 Job Site</p>

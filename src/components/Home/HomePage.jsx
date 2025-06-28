@@ -219,14 +219,19 @@
 //   );
 // }
 
-import React from 'react'
+// components/Home/HomePage.jsx
+import React from "react";
+import PostFeed from "../PostFeed";
 
 const HomePage = () => {
   return (
-    <div className='mt-40 display-flex justify-center items-center text-3xl font-bold text-gray-200'>
-      home
+    <div className="mt-20 px-4">
+      <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+        Latest Posts
+      </h2>
+      <PostFeed />
     </div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;

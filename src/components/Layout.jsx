@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/shared/Sidebar";
 import Navbar from "../components/shared/Navbar";
 import Footer from "../components/shared/Footer";
+import PostFeed from "./PostFeed";
 
 const Layout = () => {
     return (

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -22,15 +24,15 @@ const handleLogin = async (e) => {
     console.log("Login Response:", data);
 
     if (response.ok) {
-      alert("✅ Login successful!");
+        toast.success("✅ Login successful!");
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       navigate('/feed')
     } else {
-      alert(`❌ Error: ${data.msg || data.message || 'Login failed.'}`);
+       toast.error(`❌ ${data.msg || data.message || 'Login failed.'}`);
     }
   } catch (err) {
-    alert(`❌ Network error: ${err.message}`);
+    toast.error(`❌ Network error: ${err.message}`);
   }
 };
 
