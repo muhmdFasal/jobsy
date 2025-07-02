@@ -1,21 +1,49 @@
-import { Navigate } from 'react-router-dom';
+// import { Navigate } from 'react-router-dom';
+// import WelcomeScreen from '../WelcomeScreen/WelcomeScreen';
+
+
+// const AuthHandler = () => {
+
+//     const token = localStorage.getItem('token');
+
+//     if (token) {
+//         return <Navigate to="/feed" replace />;
+//     }
+//       return <WelcomeScreen />;
+
+
+// }
+
+// export default AuthHandler
+
+
+
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import WelcomeScreen from '../WelcomeScreen/WelcomeScreen';
 
-
 const AuthHandler = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true); // loading state to prevent double navigation
 
+  useEffect(() => {
     const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
 
-    if (token) {
-        // User is authenticated—redirect them to the feed
-        return <Navigate to="/feed" replace />;
+    if (token && user) {
+      if (user.role === 'admin') {
+        navigate('/admin-dashboard', { replace: true });
+      } else {
+        navigate('/feed', { replace: true });
+      }
+    } else {
+      setLoading(false); // allow WelcomeScreen to show only if not redirected
     }
+  }, [navigate]);
 
-    // Not authenticated—send to login page
-    // return <Navigate to="/login" replace />;
-      return <WelcomeScreen />;
+  if (loading) return null; // prevent flashing before redirect completes
 
+  return <WelcomeScreen />;
+};
 
-}
-
-export default AuthHandler
+export default AuthHandler;

@@ -12,7 +12,7 @@ const PostFeed = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+    <div className="w-full max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {posts.length === 0 ? (
         <p className="text-gray-500 col-span-full text-center text-lg">
           No posts yet.
@@ -64,4 +64,3 @@ const PostFeed = () => {
 };
 
 export default PostFeed;
-

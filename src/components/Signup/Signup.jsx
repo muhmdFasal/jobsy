@@ -1,7 +1,7 @@
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [workStatus, setWorkStatus] = useState(null);
@@ -15,7 +15,8 @@ const Signup = () => {
     password: '',
     mobile: '',
   });
-  const navigate= useNavigate();
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,29 +26,32 @@ const Signup = () => {
       return;
     }
 
-
     try {
       const response = await fetch('http://localhost:5000/api/auth/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
           password: formData.password,
           mobile: formData.mobile,
-          role: workStatus === 'experienced' ? 'user' : 'fresher',
+          role: workStatus, // sends 'fresher', 'experienced', or 'admin'
         }),
-
       });
 
       const data = await response.json();
       console.log("Signup Response:", data);
 
       if (response.ok) {
-         toast.success('✅ Registered successfully!');
-         navigate('/feed');
+        toast.success('✅ Registered successfully!');
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        if (data.user.role === 'admin') {
+          navigate('/admin-dashboard');
+        } else {
+          navigate('/feed');
+        }
       } else {
         toast.error(`❌ ${data.msg || data.message || 'Registration failed.'}`);
       }
@@ -55,7 +59,6 @@ const Signup = () => {
       toast.error(`❌ Network error: ${err.message}`);
     }
   };
-
 
   const footerLinks = [
     {
@@ -107,7 +110,7 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
-     <Toaster position="top-center" reverseOrder={false} />
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
         <h2 className="text-2xl font-semibold mb-1">Create your Jobsy profile</h2>
         <p className="text-sm text-gray-600 mb-6">Search & apply to jobs from India's No.1 Job Site</p>
@@ -166,21 +169,23 @@ const Signup = () => {
 
           <div>
             <label className="block font-medium mb-2">Work status <span className="text-red-500">*</span></label>
-            <div className="flex gap-4">
-              <div
-                className={`flex-1 border p-4 rounded-xl cursor-pointer ${workStatus === 'experienced' ? 'border-orange-500 bg-orange-50' : 'border-gray-300'}`}
-                onClick={() => setWorkStatus('experienced')}
-              >
-                <strong className="block text-lg mb-1">I'm experienced</strong>
-                <p className="text-sm text-gray-600">I have work experience</p>
-              </div>
-              <div
-                className={`flex-1 border p-4 rounded-xl cursor-pointer ${workStatus === 'fresher' ? 'border-orange-500 bg-orange-50' : 'border-gray-300'}`}
-                onClick={() => setWorkStatus('fresher')}
-              >
-                <strong className="block text-lg mb-1">I'm a fresher</strong>
-                <p className="text-sm text-gray-600">I haven't worked after graduation</p>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { value: 'experienced', label: "I'm experienced", desc: 'I have work experience' },
+                { value: 'fresher', label: "I'm a fresher", desc: 'I haven\'t worked after graduation' },
+               
+              ].map(({ value, label, desc }) => (
+                <div
+                  key={value}
+                  className={`border p-4 rounded-xl cursor-pointer ${
+                    workStatus === value ? 'border-orange-500 bg-orange-50' : 'border-gray-300'
+                  }`}
+                  onClick={() => setWorkStatus(value)}
+                >
+                  <strong className="block text-lg mb-1">{label}</strong>
+                  <p className="text-sm text-gray-600">{desc}</p>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -247,9 +252,3 @@ const Signup = () => {
 };
 
 export default Signup;
-
-
-
-
-
-
