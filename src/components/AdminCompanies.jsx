@@ -1,5 +1,6 @@
+
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast"; // Optional, for better UX
+import toast, { Toaster } from "react-hot-toast"; // ✅ Toaster included
 
 const AdminCompanies = () => {
   const [companies, setCompanies] = useState([]);
@@ -33,9 +34,6 @@ const AdminCompanies = () => {
       toast.error("Error loading companies");
     }
   };
-
-  console.log(companies,'idhenne');
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,10 +80,9 @@ const AdminCompanies = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this company?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/companies/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/companies/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -121,8 +118,10 @@ const AdminCompanies = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* ✅ Toaster added to show toast messages */}
+      <Toaster position="top-right" reverseOrder={false} />
+
       <div className="w-full px-3 sm:px-4 lg:px-6 py-4 sm:py-6 max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-6 sm:mb-8">
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 text-center sm:text-left">
             🏢 {editingId ? "Edit Company" : "Manage Companies"}
@@ -130,7 +129,6 @@ const AdminCompanies = () => {
         </div>
 
         {/* FORM */}
-        
         <form onSubmit={handleSubmit} encType="multipart/form-data">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 sm:mb-8">
             <div className="p-4 sm:p-6 lg:p-8">
@@ -211,7 +209,7 @@ const AdminCompanies = () => {
           </div>
         </form>
 
-        {/* COMPANIES LIST */}
+         {/* COMPANIES LIST */}
         {companies.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
             <div className="text-gray-400 text-5xl mb-4">🏢</div>
