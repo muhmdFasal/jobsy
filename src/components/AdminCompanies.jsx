@@ -1,236 +1,5 @@
-
-// import { useEffect, useState } from "react";
-// import toast from "react-hot-toast";
-
-// const AdminCompanies = () => {
-//   const [companies, setCompanies] = useState([]);
-//   const [editingId, setEditingId] = useState(null);
-//   const [form, setForm] = useState({
-//     name: "",
-//     website: "",
-//     description: "",
-//     location: "",
-//     logo: null,
-//   });
-
-//   const token = localStorage.getItem("token");
-
-//   useEffect(() => {
-//     fetchCompanies();
-//   }, []);
-
-//   const fetchCompanies = async () => {
-//     try {
-//       const res = await fetch("http://localhost:5000/api/companies", {
-//         headers: { Authorization: `Bearer ${token}` },
-//       });
-//       const data = await res.json();
-//       setCompanies(data);
-//     } catch (error) {
-//       toast.error("Failed to fetch companies");
-//     }
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     const formData = new FormData();
-//     formData.append("name", form.name);
-//     formData.append("website", form.website);
-//     formData.append("description", form.description);
-//     formData.append("location", form.location);
-//     if (form.logo) formData.append("logo", form.logo);
-
-//     const url = editingId
-//       ? `http://localhost:5000/api/companies/${editingId}`
-//       : "http://localhost:5000/api/companies";
-//     const method = editingId ? "PUT" : "POST";
-
-//     try {
-//       const res = await fetch(url, {
-//         method,
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: formData,
-//       });
-
-//       if (res.ok) {
-//         toast.success(editingId ? "Company updated" : "Company added");
-//         setForm({ name: "", website: "", description: "", location: "", logo: null });
-//         setEditingId(null);
-//         fetchCompanies();
-//       } else {
-//         toast.error("Failed to submit");
-//       }
-//     } catch (error) {
-//       toast.error("Submission error");
-//     }
-//   };
-
-//   const handleEdit = (company) => {
-//     setForm({
-//       name: company.name || "",
-//       website: company.website || "",
-//       description: company.description || "",
-//       location: company.location || "",
-//       logo: null,
-//     });
-//     setEditingId(company._id);
-//   };
-
-//   const handleDelete = async (id) => {
-//     if (!window.confirm("Delete company?")) return;
-//     try {
-//       const res = await fetch(`http://localhost:5000/api/companies/${id}`, {
-//         method: "DELETE",
-//         headers: { Authorization: `Bearer ${token}` },
-//       });
-//       if (res.ok) {
-//         toast.success("Company deleted");
-//         fetchCompanies();
-//       } else {
-//         toast.error("Failed to delete");
-//       }
-//     } catch (error) {
-//       toast.error("Delete error");
-//     }
-//   };
-
-//   const handleCancelEdit = () => {
-//     setEditingId(null);
-//     setForm({ name: "", website: "", description: "", location: "", logo: null });
-//   };
-
-//   return (
-//     <div className="w-full px-4 sm:px-6 py-6 max-w-6xl mx-auto">
-//       <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-800 text-center sm:text-left">
-//         🏢 {editingId ? "Edit Company" : "Manage Companies"}
-//       </h2>
-
-//       {/* FORM */}
-//       <form
-//         onSubmit={handleSubmit}
-//         className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 bg-white p-4 sm:p-6 shadow-md rounded-lg"
-//         encType="multipart/form-data"
-//       >
-//         <input
-//           value={form.name}
-//           onChange={(e) => setForm({ ...form, name: e.target.value })}
-//           placeholder="Company Name"
-//           className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
-//           required
-//         />
-//         <input
-//           value={form.website}
-//           onChange={(e) => setForm({ ...form, website: e.target.value })}
-//           placeholder="Website"
-//           className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
-//         />
-//         <input
-//           value={form.location}
-//           onChange={(e) => setForm({ ...form, location: e.target.value })}
-//           placeholder="Location"
-//           className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
-//         />
-//         <input
-//           type="file"
-//           accept="image/*"
-//           onChange={(e) => setForm({ ...form, logo: e.target.files[0] })}
-//           className="w-full border p-2 rounded file:mr-4 file:py-1 file:px-2 file:border file:rounded file:bg-orange-50 file:text-orange-700"
-//         />
-//         <textarea
-//           value={form.description}
-//           onChange={(e) => setForm({ ...form, description: e.target.value })}
-//           placeholder="Description"
-//           className="w-full border p-2 rounded col-span-1 md:col-span-2 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
-//         />
-//         <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row justify-between items-center gap-3">
-//           {editingId && (
-//             <button
-//               type="button"
-//               onClick={handleCancelEdit}
-//               className="w-full sm:w-auto bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition"
-//             >
-//               ❌ Cancel
-//             </button>
-//           )}
-//           <button
-//             type="submit"
-//             className="w-full sm:w-auto bg-orange-600 text-white px-6 py-2 rounded hover:bg-orange-700 transition sm:ml-auto"
-//           >
-//             {editingId ? "✏️ Update Company" : "➕ Add Company"}
-//           </button>
-//         </div>
-//       </form>
-
-//       {/* TABLE SECTION */}
-//       {companies.length === 0 ? (
-//         <p className="text-gray-500 text-center">No companies found.</p>
-//       ) : (
-//         <div className="w-full overflow-x-auto rounded-lg shadow-md border border-gray-200">
-//           <table className="min-w-[700px] w-full text-sm text-left bg-white">
-//             <thead className="bg-gray-100 border-b">
-//               <tr>
-//                 <th className="px-4 py-3 font-semibold text-gray-700">Logo</th>
-//                 <th className="px-4 py-3 font-semibold text-gray-700">Name</th>
-//                 <th className="px-4 py-3 font-semibold text-gray-700">Website</th>
-//                 <th className="px-4 py-3 font-semibold text-gray-700">Location</th>
-//                 <th className="px-4 py-3 font-semibold text-gray-700">Description</th>
-//                 <th className="px-4 py-3 font-semibold text-gray-700 text-center">Actions</th>
-//               </tr>
-//             </thead>
-//             <tbody className="divide-y divide-gray-200">
-//               {companies.map((c) => (
-//                 <tr key={c._id} className="hover:bg-gray-50">
-//                   <td className="px-4 py-3">
-//                     {c.logo ? (
-//                       <img
-//                         src={`http://localhost:5000${c.logo}`}
-//                         alt="Logo"
-//                         className="w-12 h-12 object-cover rounded border border-gray-300"
-//                       />
-//                     ) : (
-//                       <div className="w-12 h-12 flex items-center justify-center bg-gray-200 text-gray-500 rounded">
-//                         {c.name?.[0] || "C"}
-//                       </div>
-//                     )}
-//                   </td>
-//                   <td className="px-4 py-3 font-medium text-gray-900">{c.name}</td>
-//                   <td className="px-4 py-3 text-blue-600 underline max-w-[150px] truncate">
-//                     <a href={c.website} target="_blank" rel="noreferrer">{c.website}</a>
-//                   </td>
-//                   <td className="px-4 py-3 text-gray-700">{c.location}</td>
-//                   <td className="px-4 py-3 text-gray-600 max-w-[200px] truncate">{c.description}</td>
-//                   <td className="px-4 py-3 text-center">
-//                     <div className="flex justify-center items-center gap-2 flex-wrap">
-//                       <button
-//                         onClick={() => handleEdit(c)}
-//                         className="text-blue-600 hover:text-white hover:bg-blue-600 border border-blue-600 px-3 py-1 rounded transition"
-//                       >
-//                         Edit
-//                       </button>
-//                       <button
-//                         onClick={() => handleDelete(c._id)}
-//                         className="text-red-600 hover:text-white hover:bg-red-600 border border-red-600 px-3 py-1 rounded transition"
-//                       >
-//                         Delete
-//                       </button>
-//                     </div>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default AdminCompanies;
-
-
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast"; // Optional, for better UX
 
 const AdminCompanies = () => {
   const [companies, setCompanies] = useState([]);
@@ -243,65 +12,94 @@ const AdminCompanies = () => {
     logo: null,
   });
 
-  // Mock token for demo (in real app, use localStorage)
-  const token = "demo-token";
-
-  // Mock data for demonstration
-  const mockCompanies = [
-    {
-      _id: "1",
-      name: "Tech Solutions Inc",
-      website: "https://techsolutions.com",
-      location: "San Francisco, CA",
-      description: "Leading technology solutions provider specializing in AI and machine learning",
-      logo: null
-    },
-    {
-      _id: "2", 
-      name: "Global Enterprises",
-      website: "https://globalent.com",
-      location: "New York, NY",
-      description: "Multinational corporation with diverse business interests",
-      logo: null
-    }
-  ];
-
   useEffect(() => {
     fetchCompanies();
   }, []);
 
   const fetchCompanies = async () => {
     try {
-      // Mock API call - in real app, use actual endpoint
-      setTimeout(() => {
-        setCompanies(mockCompanies);
-      }, 500);
-    } catch (error) {
-      console.error("Failed to fetch companies");
+      const res = await fetch("http://localhost:5000/api/companies", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch");
+
+      const data = await res.json();
+      setCompanies(data);
+    } catch (err) {
+      console.error("Fetch error:", err.message);
+      toast.error("Error loading companies");
     }
   };
 
+  console.log(companies,'idhenne');
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Mock form submission
-    const newCompany = {
-      _id: Date.now().toString(),
-      name: form.name,
-      website: form.website,
-      description: form.description,
-      location: form.location,
-      logo: null
-    };
 
-    if (editingId) {
-      setCompanies(companies.map(c => c._id === editingId ? { ...c, ...newCompany, _id: editingId } : c));
-    } else {
-      setCompanies([...companies, newCompany]);
+    const formData = new FormData();
+    formData.append("name", form.name);
+    formData.append("website", form.website);
+    formData.append("description", form.description);
+    formData.append("location", form.location);
+    if (form.logo) formData.append("logo", form.logo);
+
+    const endpoint = editingId
+      ? `http://localhost:5000/api/companies/${editingId}`
+      : `http://localhost:5000/api/companies`;
+
+    const method = editingId ? "PUT" : "POST";
+
+    try {
+      const res = await fetch(endpoint, {
+        method,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Failed to submit company");
+
+      await fetchCompanies();
+      toast.success(editingId ? "Company updated" : "Company added");
+
+      setForm({
+        name: "",
+        website: "",
+        description: "",
+        location: "",
+        logo: null,
+      });
+      setEditingId(null);
+    } catch (err) {
+      console.error("Submit error:", err.message);
+      toast.error("Error saving company");
     }
+  };
 
-    setForm({ name: "", website: "", description: "", location: "", logo: null });
-    setEditingId(null);
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this company?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/companies/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to delete");
+
+      await fetchCompanies();
+      toast.success("Company deleted");
+    } catch (err) {
+      console.error("Delete error:", err.message);
+      toast.error("Error deleting company");
+    }
   };
 
   const handleEdit = (company) => {
@@ -313,11 +111,7 @@ const AdminCompanies = () => {
       logo: null,
     });
     setEditingId(company._id);
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete company?")) return;
-    setCompanies(companies.filter(c => c._id !== id));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCancelEdit = () => {
@@ -336,91 +130,86 @@ const AdminCompanies = () => {
         </div>
 
         {/* FORM */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 sm:mb-8">
-          <div className="p-4 sm:p-6 lg:p-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-              <div className="sm:col-span-2 lg:col-span-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Company Name *
-                </label>
-                <input
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Enter company name"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  required
+        
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 sm:mb-8">
+            <div className="p-4 sm:p-6 lg:p-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                <div className="sm:col-span-2 lg:col-span-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Company Name *
+                  </label>
+                  <input
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="Enter company name"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
+                  <input
+                    value={form.website}
+                    onChange={(e) => setForm({ ...form, website: e.target.value })}
+                    placeholder="https://example.com"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                  <input
+                    value={form.location}
+                    onChange={(e) => setForm({ ...form, location: e.target.value })}
+                    placeholder="City, State/Country"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div className="sm:col-span-2 lg:col-span-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setForm({ ...form, logo: e.target.files[0] })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm file:mr-4 file:py-1 file:px-3 file:border-0 file:rounded-md file:bg-orange-50 file:text-orange-700 file:text-sm hover:file:bg-orange-100"
+                  />
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  placeholder="Brief description of the company"
+                  rows={4}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Website
-                </label>
-                <input
-                  value={form.website}
-                  onChange={(e) => setForm({ ...form, website: e.target.value })}
-                  placeholder="https://example.com"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Location
-                </label>
-                <input
-                  value={form.location}
-                  onChange={(e) => setForm({ ...form, location: e.target.value })}
-                  placeholder="City, State/Country"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div className="sm:col-span-2 lg:col-span-3">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Company Logo
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setForm({ ...form, logo: e.target.files[0] })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm file:mr-4 file:py-1 file:px-3 file:border-0 file:rounded-md file:bg-orange-50 file:text-orange-700 file:text-sm hover:file:bg-orange-100"
-                />
-              </div>
-            </div>
-            
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
-              </label>
-              <textarea
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="Brief description of the company"
-                rows={4}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              />
-            </div>
-            
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
-              {editingId && (
+
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+                {editingId && (
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="w-full sm:w-auto order-2 sm:order-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 cursor-pointer rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                )}
                 <button
-                  type="button"
-                  onClick={handleCancelEdit}
-                  className="w-full sm:w-auto order-2 sm:order-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                  type="submit"
+                  className="w-full cursor-pointer sm:w-auto order-1 sm:order-2 bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors"
                 >
-                  Cancel
+                  {editingId ? "Update Company" : "Add Company"}
                 </button>
-              )}
-              <button
-                type="submit"
-                className="w-full sm:w-auto order-1 sm:order-2 bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors"
-              >
-                {editingId ? "Update Company" : "Add Company"}
-              </button>
+              </div>
             </div>
           </div>
-        </div>
+        </form>
 
         {/* COMPANIES LIST */}
         {companies.length === 0 ? (
@@ -570,13 +359,13 @@ const AdminCompanies = () => {
                           <div className="flex justify-center gap-2">
                             <button
                               onClick={() => handleEdit(company)}
-                              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-3 py-1 rounded-md text-sm font-medium transition-colors"
+                              className="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-3 py-1 cursor-pointer rounded-md text-sm font-medium transition-colors"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => handleDelete(company._id)}
-                              className="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-3 py-1 rounded-md text-sm font-medium transition-colors"
+                              className="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-3 py-1 cursor-pointer rounded-md text-sm font-medium transition-colors"
                             >
                               Delete
                             </button>
