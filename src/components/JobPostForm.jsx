@@ -1,4 +1,4 @@
-// src/components/AdminDashboard/JobPostForm.jsx
+
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -9,6 +9,7 @@ export default function JobPostForm() {
     location: "",
     salary: "",
     jobType: "Full-time",
+    expiresAt: "",
   });
 
   const handleSubmit = async (e) => {
@@ -35,6 +36,7 @@ export default function JobPostForm() {
           location: "",
           salary: "",
           jobType: "Full-time",
+          expiresAt: "",
         });
       } else {
         toast.error(data.message || "Failed to post job");
@@ -45,61 +47,96 @@ export default function JobPostForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-lg bg-white p-6 rounded shadow mx-auto mt-8">
-      <h2 className="text-2xl font-semibold mb-4 text-center">Post a New Job Vacancy</h2>
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+        <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">
+          Post a New Job
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Job Title */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Job Title</label>
+            <input
+              type="text"
+              required
+              className="mt-1 block w-full border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            />
+          </div>
 
-      <label className="block mb-2 font-medium">Job Title</label>
-      <input
-        type="text"
-        required
-        className="w-full border p-2 mb-4 rounded"
-        value={formData.title}
-        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-      />
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Job Description</label>
+            <textarea
+              required
+              rows={5}
+              className="mt-1 block w-full border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            />
+          </div>
 
-      <label className="block mb-2 font-medium">Job Description</label>
-      <textarea
-        required
-        className="w-full border p-2 mb-4 rounded"
-        rows={5}
-        value={formData.description}
-        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-      />
+          {/* Location */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Location</label>
+            <input
+              type="text"
+              className="mt-1 block w-full border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+            />
+          </div>
 
-      <label className="block mb-2 font-medium">Location</label>
-      <input
-        type="text"
-        className="w-full border p-2 mb-4 rounded"
-        value={formData.location}
-        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-      />
+          {/* Salary */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Salary</label>
+            <input
+              type="text"
+              className="mt-1 block w-full border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+              value={formData.salary}
+              onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+            />
+          </div>
 
-      <label className="block mb-2 font-medium">Salary</label>
-      <input
-        type="text"
-        className="w-full border p-2 mb-4 rounded"
-        value={formData.salary}
-        onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-      />
+          {/* Job Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Job Type</label>
+            <select
+              className="mt-1 block w-full border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+              value={formData.jobType}
+              onChange={(e) => setFormData({ ...formData, jobType: e.target.value })}
+            >
+              <option>Full-time</option>
+              <option>Part-time</option>
+              <option>Contract</option>
+              <option>Internship</option>
+            </select>
+          </div>
 
-      <label className="block mb-2 font-medium">Job Type</label>
-      <select
-        className="w-full border p-2 mb-6 rounded"
-        value={formData.jobType}
-        onChange={(e) => setFormData({ ...formData, jobType: e.target.value })}
-      >
-        <option>Full-time</option>
-        <option>Part-time</option>
-        <option>Contract</option>
-        <option>Internship</option>
-      </select>
+          {/* Expires At */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Expires At</label>
+            <input
+              type="date"
+              required
+              className="mt-1 block w-full border border-gray-300 rounded-lg p-3 shadow-sm focus:ring-orange-500 focus:border-orange-500"
+              value={formData.expiresAt}
+              onChange={(e) => setFormData({ ...formData, expiresAt: e.target.value })}
+            />
+          </div>
 
-      <button
-        type="submit"
-        className="w-full py-3 bg-orange-600 text-white rounded hover:bg-orange-700 transition"
-      >
-        Post Job
-      </button>
-    </form>
+          {/* Submit Button */}
+          <div>
+            <button
+              type="submit"
+              className="w-full bg-orange-600 text-white font-semibold py-3 rounded-lg hover:bg-orange-700 transition"
+            >
+              Post Job
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

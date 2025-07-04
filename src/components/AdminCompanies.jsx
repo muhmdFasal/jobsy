@@ -121,7 +121,7 @@ const AdminCompanies = () => {
       {/* ✅ Toaster added to show toast messages */}
       <Toaster position="top-right" reverseOrder={false} />
 
-      <div className="w-full px-3 sm:px-4 lg:px-6 py-4 sm:py-6 max-w-7xl mx-auto">
+      <div className="w-full px-3 sm:px-4 lg:px-6 py-4 sm:py-6 max-w-5xl mx-auto">
         <div className="mb-6 sm:mb-8">
           <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 text-center sm:text-left">
             🏢 {editingId ? "Edit Company" : "Manage Companies"}

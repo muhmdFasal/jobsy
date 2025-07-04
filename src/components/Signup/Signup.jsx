@@ -35,7 +35,7 @@ const Signup = () => {
           email: formData.email,
           password: formData.password,
           mobile: formData.mobile,
-          role: workStatus, // sends 'fresher', 'experienced', or 'admin'
+          role: workStatus, 
         }),
       });
 
@@ -47,11 +47,15 @@ const Signup = () => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
+        
         if (data.user.role === 'admin') {
-          navigate('/admin-dashboard');
-        } else {
-          navigate('/feed');
-        }
+  navigate('/admin-dashboard');
+} else if (data.user.role === 'company') {
+  navigate('/company-dashboard'); // 👈 your job management page
+} else {
+  navigate('/feed');
+}
+
       } else {
         toast.error(`❌ ${data.msg || data.message || 'Registration failed.'}`);
       }
@@ -169,10 +173,11 @@ const Signup = () => {
 
           <div>
             <label className="block font-medium mb-2">Work status <span className="text-red-500">*</span></label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
                 { value: 'experienced', label: "I'm experienced", desc: 'I have work experience' },
                 { value: 'fresher', label: "I'm a fresher", desc: 'I haven\'t worked after graduation' },
+                { value: 'company', label: 'company', desc: 'add jobs' },
                
               ].map(({ value, label, desc }) => (
                 <div
