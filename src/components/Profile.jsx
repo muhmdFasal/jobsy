@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
+import { Camera, Edit3, Save, X, User, Phone, Calendar, Mail, Clock } from "lucide-react";
 
 const Profile = () => {
   const token = localStorage.getItem("token");
@@ -15,7 +15,6 @@ const Profile = () => {
   });
   const [imageFile, setImageFile] = useState(null);
 
-  // Fetch profile
   useEffect(() => {
     fetch("http://localhost:5000/api/auth/profile", {
       headers: { Authorization: `Bearer ${token}` },
@@ -35,8 +34,8 @@ const Profile = () => {
         });
       })
       .catch((err) => {
-       toast.error(" Failed to load profile. Please login again.");
-        console.error("Profile fetch error:", err.message);
+        toast.error("Failed to load profile.");
+        console.error(err);
       });
   }, []);
 
@@ -64,157 +63,238 @@ const Profile = () => {
 
       const data = await res.json();
       if (res.ok) {
-        toast.success("Profile updated successfully!");
+        toast.success("Profile updated!");
         setUser(data.user);
         setEditMode(false);
         setImageFile(null);
       } else {
-         toast.error(" Update failed: " + data.msg);
+        toast.error(data.msg || "Update failed.");
       }
     } catch (err) {
-     toast.error(" Error updating profile");
+      toast.error("Update error");
       console.error(err);
     }
   };
 
-  if (!user) return <div className="p-6 text-center">Loading...</div>;
+  if (!user) return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-100 mx-auto mb-4"></div>
+        <p className="text-slate-600 font-medium">Loading profile...</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="flex-1 px-6 py-8 bg-gray-50 min-h-screen">
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-8 border border-gray-200 relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header Card */}
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden mb-6">
+          <div className="bg-gradient-to-r from-yellow-100 to-yellow-100 h-32 relative">
+            <div className="absolute inset-0 bg-black/10"></div>
+          </div>
+          
+          <div className="relative px-8 pb-8">
+            {/* Profile Image */}
+            <div className="flex flex-col items-center -mt-16 mb-6">
+              <div className="relative group">
+                {editMode ? (
+                  <>
+                    {imageFile ? (
+                      <img
+                        src={URL.createObjectURL(imageFile)}
+                        className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
+                        alt="preview"
+                      />
+                    ) : user.image ? (
+                      <img
+                        src={`http://localhost:5000${user.image}`}
+                        className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
+                        alt="User"
+                      />
+                    ) : (
+                      <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 border-4 border-white shadow-lg flex items-center justify-center text-3xl font-bold text-white">
+                        {user.name?.[0]?.toUpperCase()}
+                      </div>
+                    )}
+                    <label className="absolute bottom-0 right-0 bg-yellow-600 hover:bg-yellow-700 text-white rounded-full p-2 cursor-pointer shadow-lg transition-colors">
+                      <Camera className="w-4 h-4" />
+                      <input type="file" onChange={handleImageChange} className="hidden" accept="image/*" />
+                    </label>
+                  </>
+                ) : user.image ? (
+                  <img
+                    src={`http://localhost:5000${user.image}`}
+                    className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
+                    alt="User"
+                  />
+                ) : (
+                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 border-4 border-white shadow-lg flex items-center justify-center text-3xl font-bold text-white">
+                    {user.name?.[0]?.toUpperCase()}
+                  </div>
+                )}
+              </div>
 
-        <div className="absolute top-6 right-6 space-x-3">
-          {editMode ? (
-            <>
-              <button
-                onClick={handleSubmit}
-                className="px-4 py-2 text-sm cursor-pointer font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-sm transition"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => {
-                  setEditMode(false);
-                  setImageFile(null);
-                }}
-                className="px-4 py-2 cursor-pointer text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm transition"
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => setEditMode(true)}
-              className="px-4 py-2 text-sm cursor-pointer font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition"
-            >
-              Edit Profile
-            </button>
-          )}
-        </div>
-
-        {/* Profile Image & Name */}
-        <div className="flex flex-col items-center justify-center mb-6">
-          {editMode ? (
-            <>
-              {imageFile ? (
-                <img
-                  src={URL.createObjectURL(imageFile)}
-                  alt="preview"
-                  className="w-28 h-28 rounded-full border object-cover mb-2"
-                />
-              ) : user.image ? (
-                <img
-                  src={`http://localhost:5000${user.image}`}
-                  alt="User"
-                  className="w-28 h-28 rounded-full border object-cover mb-2"
-                />
-              ) : (
-                <div className="w-28 h-28 rounded-full border border-gray-300 flex items-center justify-center text-sm text-gray-500">
-                  {user.name?.[0]}
+              <div className="text-center mb-6">
+                <h1 className="text-3xl font-bold text-slate-800 mb-2">{user.name}</h1>
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-yellow-800 text-sm font-medium">
+                  {user.role}
                 </div>
-              )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="mt-2 text-sm"
-              />
-            </>
-          ) : user.image ? (
-            <img
-              src={`http://localhost:5000${user.image}`}
-              alt="User"
-              className="w-28 h-28 rounded-full border object-cover mb-2"
-            />
-          ) : (
-            <div className="w-28 h-28 rounded-full border border-gray-300 flex items-center justify-center text-sm text-gray-500">
-              {user.name?.[0]}
-            </div>
-          )}
+              </div>
 
-          <h2 className="text-2xl font-bold text-gray-800 mt-4">{user.name}</h2>
-          <p className="text-sm text-gray-500 capitalize">{user.role}</p>
+              {/* Action Buttons */}
+              <div className="flex space-x-3">
+                {editMode ? (
+                  <>
+                    <button
+                      onClick={handleSubmit}
+                      className="inline-flex items-center px-6 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium shadow-lg transition-all duration-200 hover:shadow-xl"
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Changes
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditMode(false);
+                        setImageFile(null);
+                      }}
+                      className="inline-flex items-center px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium shadow-lg transition-all duration-200 hover:shadow-xl"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setEditMode(true)}
+                    className="inline-flex items-center px-6 py-3 rounded-xl bg-yellow-600 hover:bg-yellow-700 text-white font-medium shadow-lg transition-all duration-200 hover:shadow-xl"
+                  >
+                    <Edit3 className="w-4 h-4 mr-2" />
+                    Edit Profile
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Form Fields */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6">
-          <InputField label="Name" name="name" editMode={editMode} value={formData.name} onChange={handleChange} />
-          <InputField label="Mobile" name="mobile" editMode={editMode} value={formData.mobile} onChange={handleChange} />
-          <SelectField label="Gender" name="gender" editMode={editMode} value={formData.gender} onChange={handleChange} />
-          <InputField label="Date of Birth" name="date_of_birth" type="date" editMode={editMode} value={formData.date_of_birth} onChange={handleChange} />
-          <DisplayField label="Email" value={user.email} />
-          <DisplayField label="Last Updated" value={new Date(user.updatedAt).toLocaleDateString()} />
+        {/* Information Card */}
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
+            <User className="w-6 h-6 mr-3 text-blue-600" />
+            Personal Information
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <InputField 
+              label="Full Name" 
+              name="name" 
+              value={formData.name} 
+              editMode={editMode} 
+              onChange={handleChange}
+              icon={<User className="w-4 h-4" />}
+            />
+            <InputField 
+              label="Mobile Number" 
+              name="mobile" 
+              value={formData.mobile} 
+              editMode={editMode} 
+              onChange={handleChange}
+              icon={<Phone className="w-4 h-4" />}
+            />
+            <SelectField 
+              label="Gender" 
+              name="gender" 
+              value={formData.gender} 
+              editMode={editMode} 
+              onChange={handleChange}
+            />
+            <InputField 
+              label="Date of Birth" 
+              name="date_of_birth" 
+              type="date" 
+              value={formData.date_of_birth} 
+              editMode={editMode} 
+              onChange={handleChange}
+              icon={<Calendar className="w-4 h-4" />}
+            />
+            <DisplayField 
+              label="Email Address" 
+              value={user.email}
+              icon={<Mail className="w-4 h-4" />}
+            />
+            <DisplayField 
+              label="Last Updated" 
+              value={new Date(user.updatedAt).toLocaleString()}
+              icon={<Clock className="w-4 h-4" />}
+            />
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-// Reusable input
-const InputField = ({ label, name, value, onChange, editMode, type = "text" }) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-600">{label}</label>
+const InputField = ({ label, name, value, onChange, editMode, type = "text", icon }) => (
+  <div className="space-y-2">
+    <label className="flex items-center text-sm font-semibold text-slate-700">
+      {icon && <span className="mr-2 text-slate-500">{icon}</span>}
+      {label}
+    </label>
     {editMode ? (
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        className="w-full border rounded px-3 py-2 mt-1"
-      />
+      <div className="relative">
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          className="w-full px-4 py-3 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+          placeholder={`Enter ${label.toLowerCase()}`}
+        />
+      </div>
     ) : (
-      <p className="text-gray-800 mt-1">{value}</p>
+      <div className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl">
+        <p className="text-slate-800 font-medium">{value || "Not provided"}</p>
+      </div>
     )}
   </div>
 );
 
-// Select dropdown for gender
 const SelectField = ({ label, name, value, onChange, editMode }) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-600">{label}</label>
+  <div className="space-y-2">
+    <label className="flex items-center text-sm font-semibold text-slate-700">
+      <User className="w-4 h-4 mr-2 text-slate-500" />
+      {label}
+    </label>
     {editMode ? (
       <select
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full border rounded px-3 py-2 mt-1"
+        className="w-full px-4 py-3 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
       >
-        <option value="">Select</option>
+        <option value="">Select gender</option>
         <option value="Male">Male</option>
         <option value="Female">Female</option>
         <option value="Other">Other</option>
       </select>
     ) : (
-      <p className="text-gray-800 mt-1">{value}</p>
+      <div className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl">
+        <p className="text-slate-800 font-medium">{value || "Not provided"}</p>
+      </div>
     )}
   </div>
 );
 
-// Read-only display field
-const DisplayField = ({ label, value }) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-600">{label}</label>
-    <p className="text-gray-800 mt-1">{value}</p>
+const DisplayField = ({ label, value, icon }) => (
+  <div className="space-y-2">
+    <label className="flex items-center text-sm font-semibold text-slate-700">
+      {icon && <span className="mr-2 text-slate-500">{icon}</span>}
+      {label}
+    </label>
+    <div className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl">
+      <p className="text-slate-800 font-medium">{value || "Not available"}</p>
+    </div>
   </div>
 );
 

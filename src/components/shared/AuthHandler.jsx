@@ -1,20 +1,4 @@
-// import { Navigate } from 'react-router-dom';
-// import WelcomeScreen from '../WelcomeScreen/WelcomeScreen';
 
-
-// const AuthHandler = () => {
-
-//     const token = localStorage.getItem('token');
-
-//     if (token) {
-//         return <Navigate to="/feed" replace />;
-//     }
-//       return <WelcomeScreen />;
-
-
-// }
-
-// export default AuthHandler
 
 
 

@@ -128,12 +128,7 @@ export default function Sidebar() {
               >
                 📄 My Applications
               </Link>
-              <Link
-                to="/feed/saved-jobs"
-                className="px-3 py-2 rounded hover:bg-yellow-100 transition-colors"
-              >
-                ⭐ Saved Jobs
-              </Link>
+              
             </>
           )}
 
