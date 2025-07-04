@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { MapPin, Calendar, Building, Search, IndianRupee, Filter, ChevronLeft, ChevronRight } from "lucide-react"; //for icons
+import { MapPin, Calendar, Building, Search, IndianRupee, Filter, ChevronLeft, ChevronRight, Upload, X, FileText, User } from "lucide-react";
 
 export default function JobList() {
   const [jobs, setJobs] = useState([]);
   const [filters, setFilters] = useState({ location: "", jobType: "" });
   const [currentPage, setCurrentPage] = useState(1);
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [resumeFile, setResumeFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userInfo, setUserInfo] = useState({ name: "", email: "" });
   const jobsPerPage = 5;
 
   const fetchJobs = async () => {
@@ -19,29 +24,102 @@ export default function JobList() {
     }
   };
 
-  useEffect(() => {
-    fetchJobs();
-  }, []);
-
-  const handleApply = async (jobId) => {
+  
+  
+  const fetchUserInfo = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return toast.error("Login required to apply");
+    if (!token) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/applications/apply/${jobId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({}),
+      const res = await fetch("http://localhost:5000/api/user/profile", {
+        headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
-      if (res.ok) toast.success("Application submitted!");
-      else toast.error(data.message || "Failed to apply");
+      if (res.ok) {
+        setUserInfo({ name: data.name, email: data.email });
+      }
+    } catch {
+      // Silent fail for user info
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+    fetchUserInfo();
+  }, []);
+
+  const handleApplyClick = (job) => {
+    const token = localStorage.getItem("token");
+    if (!token) return toast.error("Login required to apply");
+    
+    setSelectedJob(job);
+    setShowApplicationModal(true);
+  };
+
+  const handleSubmitApplication = async (e) => {
+    e.preventDefault();
+    
+    if (!resumeFile) {
+      toast.error("Please upload your resume");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const token = localStorage.getItem("token");
+    
+    try {
+      const formData = new FormData();
+      formData.append("resume", resumeFile);
+
+      const res = await fetch(`http://localhost:5000/api/applications/apply/${selectedJob._id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+      
+      if (res.ok) {
+        toast.success("Application submitted successfully!");
+        setShowApplicationModal(false);
+        setResumeFile(null);
+        setSelectedJob(null);
+      } else {
+        toast.error(data.message || "Failed to submit application");
+      }
     } catch {
       toast.error("Network error");
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Please upload a PDF or Word document");
+        return;
+      }
+      
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File size must be less than 5MB");
+        return;
+      }
+      
+      setResumeFile(file);
+    }
+  };
+
+  const closeModal = () => {
+    setShowApplicationModal(false);
+    setSelectedJob(null);
+    setResumeFile(null);
   };
 
   // Filters and pagination
@@ -72,6 +150,21 @@ export default function JobList() {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
   };
+
+   useEffect(() => {
+    fetchJobs();
+
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const parsed = JSON.parse(userStr);
+        setUserInfo({ name: parsed.name, email: parsed.email });
+      } catch (e) {
+        console.error("Failed to parse user info from localStorage", e);
+      }
+    }
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -182,8 +275,8 @@ export default function JobList() {
                       
                       <div className="flex flex-col gap-2">
                         <button
-                          onClick={() => handleApply(job._id)}
-                          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 cursor-pointer text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                          onClick={() => handleApplyClick(job)}
+                          className="px-6 cursor-pointer py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                         >
                           Apply Now
                         </button>
@@ -241,6 +334,130 @@ export default function JobList() {
           </div>
         )}
       </div>
+
+      {/* Application Modal */}
+      {showApplicationModal && selectedJob && (
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Apply for Job</h2>
+                <button
+                  onClick={closeModal}
+                  className="p-2 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Job Info */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <h3 className="font-semibold text-gray-900 mb-2">{selectedJob.title}</h3>
+                <p className="text-gray-600 text-sm mb-2">{selectedJob.company?.name}</p>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <MapPin className="w-4 h-4" />
+                  <span>{selectedJob.location}</span>
+                </div>
+              </div>
+
+              {/* Application Form */}
+              <form onSubmit={handleSubmitApplication} className="space-y-4">
+                {/* User Info */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <User className="w-4 h-4 inline mr-1" />
+                      Your Name
+                    </label>
+                    <input
+                      type="text"
+                      value={userInfo.name}
+                      readOnly
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={userInfo.email}
+                      readOnly
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                    />
+                  </div>
+                </div>
+
+                {/* Resume Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <FileText className="w-4 h-4 inline mr-1" />
+                    Upload Resume *
+                  </label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-colors">
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="resume-upload"
+                    />
+                    <label
+                      htmlFor="resume-upload"
+                      className="cursor-pointer flex flex-col items-center gap-2"
+                    >
+                      <Upload className="w-8 h-8 text-gray-400" />
+                      <span className="text-sm text-gray-600">
+                        Click to upload or drag and drop
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        PDF, DOC, DOCX (max 5MB)
+                      </span>
+                    </label>
+                  </div>
+                  
+                  {resumeFile && (
+                    <div className="mt-2 p-2 bg-green-50 rounded-lg flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-green-600" />
+                      <span className="text-sm text-green-800">{resumeFile.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => setResumeFile(null)}
+                        className="ml-auto cursor-pointer text-red-500 hover:text-red-700"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Submit Button */}
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="flex-1 px-4 cursor-pointer py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!resumeFile || isSubmitting}
+                    className="flex-1 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit Application"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+
