@@ -40,7 +40,7 @@ export default function Sidebar() {
     <div className="mb-4 text-center">
       {user?.image ? (
         <img
-          src={`http://localhost:5000${user.image}`}
+          src={`http://localhost:5000${user?.image}`}
           className="w-16 h-16 rounded-full mx-auto object-cover border"
           alt="Avatar"
         />
@@ -120,7 +120,7 @@ export default function Sidebar() {
                 to="/feed/job"
                 className="px-3 py-2 rounded hover:bg-yellow-100 transition-colors"
               >
-                📄 Jobs
+                💼 Jobs
               </Link>
               <Link
                 to="/feed/applications"
@@ -136,7 +136,7 @@ export default function Sidebar() {
             to="/feed/posts"
             className="px-3 py-2 rounded hover:bg-yellow-100 transition-colors"
           >
-            🧾 My Posts
+            📷 My Posts
           </Link>
           <button
             onClick={handleLogout}
@@ -149,7 +149,7 @@ export default function Sidebar() {
 
       {/* Mobile Sidebar */}
       {mobileSidebarOpen && (
-        <aside className="fixed top-0 left-0 h-full w-64 bg-white border-r p-4 z-40 md:hidden transform transition-transform duration-300 ease-in-out">
+        <aside className="fixed top-0 left-0 h-full w-64 bg-white border-r p-4 z-40 block md:hidden transform transition-transform duration-300 ease-in-out">
           <button
             onClick={toggleMobileSidebar}
             className="absolute top-4 right-4 p-1 text-gray-500"
@@ -194,18 +194,19 @@ export default function Sidebar() {
               </>
             ) : (
               <>
+              <Link
+                  to="/feed/job"
+                  className="px-3 py-2 rounded hover:bg-yellow-100 transition-colors"
+                >
+                  💼 Jobs
+                </Link>
                 <Link
                   to="/feed/applications"
                   className="px-3 py-2 rounded hover:bg-yellow-100 transition-colors"
                 >
                   📄 My Applications
                 </Link>
-                <Link
-                  to="/feed/saved-jobs"
-                  className="px-3 py-2 rounded hover:bg-yellow-100 transition-colors"
-                >
-                  ⭐ Saved Jobs
-                </Link>
+                
               </>
             )}
 
@@ -213,7 +214,7 @@ export default function Sidebar() {
               to="/feed/posts"
               className="px-3 py-2 rounded hover:bg-yellow-100 transition-colors"
             >
-              🧾 My Posts
+              📷 My Posts
             </Link>
             <button
               onClick={handleLogout}

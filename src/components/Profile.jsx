@@ -93,7 +93,7 @@ const Profile = () => {
           <div className="bg-gradient-to-r from-yellow-100 to-yellow-100 h-32 relative">
             <div className="absolute inset-0 bg-black/10"></div>
           </div>
-          
+
           <div className="relative px-8 pb-8">
             {/* Profile Image */}
             <div className="flex flex-col items-center -mt-16 mb-6">
@@ -148,9 +148,9 @@ const Profile = () => {
                   <>
                     <button
                       onClick={handleSubmit}
-                      className="inline-flex items-center px-6 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium shadow-lg transition-all duration-200 hover:shadow-xl"
+                      className="inline-flex items-center px-6 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium shadow-lg transition-all duration-200 hover:shadow-xl cursor-pointer"
                     >
-                      <Save className="w-4 h-4 mr-2" />
+                      <Save className="w-4 h-4 mr-2 " />
                       Save Changes
                     </button>
                     <button
@@ -158,16 +158,16 @@ const Profile = () => {
                         setEditMode(false);
                         setImageFile(null);
                       }}
-                      className="inline-flex items-center px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium shadow-lg transition-all duration-200 hover:shadow-xl"
+                      className="inline-flex items-center px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium shadow-lg transition-all duration-200 hover:shadow-xl cursor-pointer"
                     >
-                      <X className="w-4 h-4 mr-2" />
+                      <X className="w-4 h-4 mr-2 " />
                       Cancel
                     </button>
                   </>
                 ) : (
                   <button
                     onClick={() => setEditMode(true)}
-                    className="inline-flex items-center px-6 py-3 rounded-xl bg-yellow-600 hover:bg-yellow-700 text-white font-medium shadow-lg transition-all duration-200 hover:shadow-xl"
+                    className="inline-flex items-center px-6 py-3 rounded-xl bg-yellow-600 hover:bg-yellow-700 text-white font-medium shadow-lg transition-all duration-200 hover:shadow-xl cursor-pointer"
                   >
                     <Edit3 className="w-4 h-4 mr-2" />
                     Edit Profile
@@ -184,47 +184,66 @@ const Profile = () => {
             <User className="w-6 h-6 mr-3 text-blue-600" />
             Personal Information
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <InputField 
-              label="Full Name" 
-              name="name" 
-              value={formData.name} 
-              editMode={editMode} 
+            <InputField
+              label="Full Name"
+              name="name"
+              value={formData.name}
+              editMode={editMode}
               onChange={handleChange}
               icon={<User className="w-4 h-4" />}
             />
-            <InputField 
-              label="Mobile Number" 
-              name="mobile" 
-              value={formData.mobile} 
-              editMode={editMode} 
+            <InputField
+              label="Mobile Number"
+              name="mobile"
+              value={formData.mobile}
+              editMode={editMode}
               onChange={handleChange}
               icon={<Phone className="w-4 h-4" />}
             />
-            <SelectField 
-              label="Gender" 
-              name="gender" 
-              value={formData.gender} 
-              editMode={editMode} 
-              onChange={handleChange}
-            />
-            <InputField 
-              label="Date of Birth" 
-              name="date_of_birth" 
-              type="date" 
-              value={formData.date_of_birth} 
-              editMode={editMode} 
-              onChange={handleChange}
-              icon={<Calendar className="w-4 h-4" />}
-            />
-            <DisplayField 
-              label="Email Address" 
+
+          
+
+            <div>
+    {user.role !== "company" ? (
+      <SelectField
+        label="Gender"
+        name="gender"
+        value={formData.gender}
+        editMode={editMode}
+        onChange={handleChange}
+      />
+    ) : (
+      <div className="invisible">Placeholder</div> // maintains spacing
+    )}
+  </div>
+
+  {/* Date of Birth */}
+  <div>
+    {user.role !== "company" ? (
+      <InputField
+        label="Date of Birth"
+        name="date_of_birth"
+        type="date"
+        value={formData.date_of_birth}
+        editMode={editMode}
+        onChange={handleChange}
+        icon={<Calendar className="w-4 h-4" />}
+      />
+    ) : (
+      <div className="invisible">Placeholder</div>
+    )}
+  </div>
+
+
+            <DisplayField
+              label="Email Address"
               value={user.email}
               icon={<Mail className="w-4 h-4" />}
             />
-            <DisplayField 
-              label="Last Updated" 
+            <DisplayField
+              label="Last Updated"
               value={new Date(user.updatedAt).toLocaleString()}
               icon={<Clock className="w-4 h-4" />}
             />
