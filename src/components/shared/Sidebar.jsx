@@ -83,7 +83,7 @@ export default function Sidebar() {
       )}
 
       {/* Desktop Sidebar */}
-      <aside className="w-64 bg-white border-r-2 border shadow-2xl p-4 hidden md:block fixed top-0 left-0 h-screen z-40">
+      <aside className="w-64 bg-white shadow-2xl p-4 hidden md:block fixed top-0 left-0 h-screen z-40">
         {AvatarBlock()}
         <nav className="flex flex-col gap-2 text-sm">
           <Link
