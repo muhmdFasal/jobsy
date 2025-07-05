@@ -268,7 +268,7 @@ export default function JobList() {
                             <div className="bg-green-100 p-1 rounded">
                               <IndianRupee className="w-4 h-4 text-green-600" />
                             </div>
-                            <span className="text-green-700 font-semibold">{job.salary} LPA</span>
+                            <span className="text-green-700 font-semibold">{job.salary} </span>
                           </div>
                         )}
                       </div>
